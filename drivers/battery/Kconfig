@@ -371,6 +371,12 @@ config CHARGER_SM5703
 	  SM5703 incluse led, flash driver.
 	  You have to define MFD_SM5703
 
+config MAXSM5703_CHARGE_CONTROL
+	bool "Charge control interface for Maxim77843"
+	default y
+	help
+	  Allows configuration of AC, USB and Wireless charging levels	
+
 config AFC_CHARGER_MODE
 	bool "afc charging support in sec battery driver"
 	default n
