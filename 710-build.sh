@@ -5,7 +5,7 @@ DTS=arch/arm/boot/dts
 RDIR=$(pwd)
 # Toolchain
 export ARCH=arm
-export CROSS_COMPILE=../toolchains/arm-eabi-4.8/bin/arm-eabi-
+export CROSS_COMPILE=../toolchains/UBERTC-4.9/bin/arm-eabi-
 make clean && make mrproper
 rm -rf dt.img
 make gts28wifi_03_defconfig
