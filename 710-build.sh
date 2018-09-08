@@ -2,18 +2,31 @@
 
 #!/bin/bash
 DTS=arch/arm/boot/dts
+
 RDIR=$(pwd)
-# Toolchain
+
 export ARCH=arm
+
 export CROSS_COMPILE=../toolchains/UBERTC-4.9/bin/arm-eabi-
-make clean && make mrproper
+
+make clean
+
+make mrproper
+
 rm -rf dt.img
+
 make gts28wifi_03_defconfig
+
 make exynos5433-gts28_eur_open_03.dtb
+
 make exynos5433-gts28_eur_open_04.dtb
+
 make exynos5433-gts28wifi_eur_open_05.dtb
+
 make exynos5433-gts28wifi_eur_open_06.dtb
+
 make ARCH=arm -j6
+
 echo -n "Build dt.img......................................."
 
 ./tools/dtbtool -o ./dt.img -v -s 2048 -p ./scripts/dtc/ $DTS/
@@ -34,6 +47,14 @@ cd /home/matt/android/N4N/Ramdisks/AIK-Linux
 
 sudo ./cleanup.sh
 
+echo "Copy zImage"
+
+sudo cp -a /home/matt/android/N4N/arch/arm/boot/zImage /home/matt/android/N4N/Ramdisks/710/split_img/boot.img-zImage
+
+echo "Copy dt.img"
+
+sudo cp -a /home/matt/android/N4N/dt.img /home/matt/android/N4N/Ramdisks/710/split_img/boot.img-dtb
+
 echo "Copy Ramdisk"
 
 sudo cp -a /home/matt/android/N4N/Ramdisks/710/ramdisk/. /home/matt/android/N4N/Ramdisks/AIK-Linux/ramdisk
@@ -42,19 +63,11 @@ echo "Copy split_img"
 
 sudo cp -a /home/matt/android/N4N/Ramdisks/710/split_img/. /home/matt/android/N4N/Ramdisks/AIK-Linux/split_img
 
-echo "Copy zImage"
-
-sudo cp /home/matt/android/N4N/arch/arm/boot/zImage /home/matt/android/N4N/Ramdisks/710/split_img/boot.img-zImage
-
-echo "Copy dt.img"
-
-sudo cp /home/matt/android/N4N/dt.img /home/matt/android/N4N/Ramdisks/710/split_img/boot.img-dtb
-
 echo "pack boot.img"
 
 sudo ./repackimg.sh
 
-echo "Move boot.img"
+echo "Copy boot.img"
 
 cp /home/matt/android/N4N/Ramdisks/AIK-Linux/image-new.img /home/matt/android/N4N/Ramdisks/710boot.img
 
@@ -64,7 +77,8 @@ echo "Cleanup AIK"
 
 sudo ./cleanup.sh
 
+rm /home/matt/android/N4N/Ramdisks/710/split_img/boot.img-zImage
+
 echo "boot.img at /home/matt/android/N4N/Ramdisks/710boot.img"
 
 echo "Finished"
-
