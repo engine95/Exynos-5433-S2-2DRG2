@@ -1,9 +1,9 @@
 #Build 810
 
 #!/bin/bash
-DTS=arch/arm/boot/dts
+#DTS=arch/arm/boot/dts
 
-RDIR=$(pwd)
+#RDIR=$(pwd)
 
 export ARCH=arm
 
@@ -17,29 +17,29 @@ rm -rf dt.img
 
 make gts210wifi_02_defconfig
 
-make exynos5433-gts210_eur_open_03.dtb
+#make exynos5433-gts210_eur_open_03.dtb
 
-make exynos5433-gts210wifi_eur_open_04.dtb
+#make exynos5433-gts210_eur_open_04.dtb
 
-make exynos5433-gts210wifi_eur_open_05.dtb
+#make exynos5433-gts210wifi_ww_open_05.dtb
 
-make exynos5433-gts210wifi_eur_open_06.dtb
+#make exynos5433-gts210wifi_ww_open_06.dtb
 
 make ARCH=arm -j6
 
-echo -n "Build dt.img......................................."
+#echo -n "Build dt.img......................................."
 
-./tools/dtbtool -o ./dt.img -v -s 2048 -p ./scripts/dtc/ $DTS/
+#./tools/dtbtool -o ./dt.img -v -s 2048 -p ./scripts/dtc/ $DTS/
 # get rid of the temps in dts directory
 rm -rf $DTS/.*.tmp
 rm -rf $DTS/.*.cmd
 rm -rf $DTS/*.dtb
 
 # Calculate DTS size for all images and display on terminal output
-du -k "./dt.img" | cut -f1 >sizT
-sizT=$(head -n 1 sizT)
-echo "Combined DT Size = $sizT Kb"
-rm -rf sizT
+#du -k "./dt.img" | cut -f1 >sizT
+#sizT=$(head -n 1 sizT)
+#echo "Combined DT Size = $sizT Kb"
+#rm -rf sizT
 
 echo "Cleanup AIK"
 
@@ -51,9 +51,9 @@ echo "Copy zImage"
 
 sudo cp -a /home/matt/android/N4N/arch/arm/boot/zImage /home/matt/android/N4N/Ramdisks/810/split_img/boot.img-zImage
 
-echo "Copy dt.img"
+#echo "Copy dt.img"
 
-sudo cp -a /home/matt/android/N4N/dt.img /home/matt/android/N4N/Ramdisks/810/split_img/boot.img-dtb
+#sudo cp -a /home/matt/android/N4N/dt.img /home/matt/android/N4N/Ramdisks/810/split_img/boot.img-dtb
 
 echo "Copy Ramdisk"
 
