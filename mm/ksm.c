@@ -221,7 +221,7 @@ static unsigned long ksm_rmap_items;
 static unsigned int ksm_thread_pages_to_scan = 100;
 
 /* Milliseconds ksmd should sleep between batches */
-static unsigned int ksm_thread_sleep_millisecs = 20;
+static unsigned int ksm_thread_sleep_millisecs = 1100;
 
 #ifdef CONFIG_NUMA
 /* Zeroed when merging across nodes is not allowed */
