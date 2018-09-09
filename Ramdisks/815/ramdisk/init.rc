@@ -294,10 +294,10 @@ on init
     chmod 0664 /dev/cpuset/cpus
 
     # change own for camera preview lagging
-    chown system system /sys/kernel/hmp/down_threshold
+    #chown system system /sys/kernel/hmp/down_threshold
 
     # set permission to 0660 for camera preview lagging
-    chmod 0660 /sys/kernel/hmp/down_threshold 
+    #chmod 0660 /sys/kernel/hmp/down_threshold 
 
     # qtaguid will limit access to specific data based on group memberships.
     #   net_bw_acct grants impersonation of socket owners.
