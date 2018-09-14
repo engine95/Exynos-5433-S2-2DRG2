@@ -90,8 +90,8 @@ static int gpu_dvfs_governor_default(struct exynos_context *platform, int utiliz
 			(utilization > platform->table[platform->step].max_threshold)) {
 		platform->step--;
 #ifdef MALI_SEC_HWCNT
-		if ((!platform->hwcnt_bt_clk) && (platform->table[platform->step].clock > platform->gpu_max_clock_limit))
-			platform->step = gpu_dvfs_get_level(platform->gpu_max_clock_limit);
+/*		if ((!platform->hwcnt_bt_clk) && (platform->table[platform->step].clock > platform->gpu_max_clock_limit))
+			platform->step = gpu_dvfs_get_level(platform->gpu_max_clock_limit);*/
 #else
 		if (platform->table[platform->step].clock > platform->gpu_max_clock_limit)
 			platform->step = gpu_dvfs_get_level(platform->gpu_max_clock_limit);
@@ -132,8 +132,8 @@ static int gpu_dvfs_governor_interactive(struct exynos_context *platform, int ut
 			platform->interactive.delay_count = 0;
 		}
 #ifdef MALI_SEC_HWCNT
-		if ((!platform->hwcnt_bt_clk) && (platform->table[platform->step].clock > platform->gpu_max_clock_limit))
-			platform->step = gpu_dvfs_get_level(platform->gpu_max_clock_limit);
+/*		if ((!platform->hwcnt_bt_clk) && (platform->table[platform->step].clock > platform->gpu_max_clock_limit))
+			platform->step = gpu_dvfs_get_level(platform->gpu_max_clock_limit);*/
 #else
 		if (platform->table[platform->step].clock > platform->gpu_max_clock_limit)
 			platform->step = gpu_dvfs_get_level(platform->gpu_max_clock_limit);
