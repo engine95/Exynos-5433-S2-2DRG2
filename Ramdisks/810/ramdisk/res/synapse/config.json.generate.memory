@@ -1,0 +1,97 @@
+#!/sbin/busybox sh
+
+BB=/sbin/busybox;
+
+cat << CTAG
+{
+    name:MEMORY,
+    elements:[
+	{ SPane:{
+		title:"Virtual Memory",
+		description:" Tune the operation of the VM subsystem of the Linux kernel and the writeout of dirty data to disk."
+	}},
+	{ SSeekBar:{
+		title:"ZSwap memory pool",
+		description:" ZSwap memory pool percentage of main memory that may be used as compressed page cache. Default is 50.",
+		min:0, max:75, unit:" %", step:1,
+		default:`cat /sys/module/zswap/parameters/max_pool_percent`,
+                action:"generic /sys/module/zswap/parameters/max_pool_percent"
+	}},
+	{ SDescription:{
+		description:" "
+	}},
+	{ SSeekBar:{
+		title:"ZSwap max_compression_ratio",
+		description:" Maximum compression ratio, as as percentage, for an acceptable compressed page. Any page that does not compress by at least this ratio will be rejected. Default is 80.",
+		min:0, max:100, unit:" %", step:1,
+		default:`cat /sys/module/zswap/parameters/max_compression_ratio`,
+                action:"generic /sys/module/zswap/parameters/max_compression_ratio"
+	}},
+	{ SDescription:{
+		description:" "
+	}},
+    	{ SSeekBar:{
+        	title:"Adaptive dirty_background_ratio on Suspend / Resume",
+        	description:" Dirty background memory buffer, more you set, more memory will be used for write buffer for background operations, buffer is released on need to free RAM. The set value is a percentage of total system memory, the number of pages at which the pdflush background writeback daemon will start writing out dirty data.",
+        	min:0,
+		max:100, 
+		unit:" %", 
+		step:5,
+        	default:`cat /proc/sys/vm/dirty_background_ratio`,
+       		action:"generic /proc/sys/vm/dirty_background_ratio",
+    	}},
+	{ SDescription:{
+		description:" "
+	}},
+	{ SSeekBar:{
+        	title:"Adaptive dirty_ratio on Suspend / Resume",
+        	description:" Dirty real time memory buffer, more you set, more memory will be used for write buffer for real time operations, buffer is released on need to free RAM. The set value is a percentage of total system memory, the number of pages at which a process which is generating disk writes will itself start writing out dirty data.",
+        	min:0,
+		max:100,
+		unit:" %",
+		step:5,
+       	 	default:`cat /proc/sys/vm/dirty_ratio`,
+        	action:"generic /proc/sys/vm/dirty_ratio",
+    	}},
+	{ SDescription:{
+		description:" "
+	}},
+    	{ SSeekBar:{
+		title:"Adaptive vfs_cache_pressure on Suspend / Resume",
+		description:" Value used to control the tendency of the kernel to reclaim the memory which is used for caching of directory and inode objects. Low values save battery while idle, but may cause stutter with longer up times. Default: screen is ON is 100 & screen OFF is fixed at 20.",
+		unit:" %",
+		step:1,
+		min:0,
+		max:150,
+		default:`cat /proc/sys/vm/vfs_cache_pressure`,
+		action:"generic /proc/sys/vm/vfs_cache_pressure"
+    	}},
+	{ SDescription:{
+		description:" "
+	}},
+	{ SSeekBar:{
+		title:"swappiness",
+		description:" A low value means the kernel will try to avoid swapping as much as possible where a higher value instead will make the kernel aggressively try to use swap space. Default is 130.",
+		max:200,
+		min:0,
+		step:10,
+		default:`cat /proc/sys/vm/swappiness`,
+		action:"generic /proc/sys/vm/swappiness",
+	}},
+	{ SDescription:{
+		description:""
+	}},
+	{ SOptionList:{
+		title:"Laptop Mode (Auto FS Writeback Delay Mode)",
+		description:" This option will delay the writebacks of file system bits cached in RAM while screen is ON (Enable for better performance @ slight risk of possible data loss if crashed or sudden loss of power).",
+		default:`$BB cat /proc/sys/vm/laptop_mode`,
+		action:"generic /proc/sys/vm/laptop_mode",
+		values:{ 0:"Disabled", 1:"Enabled"
+		}
+	}},
+	{ SDescription:{
+		description:""
+	}},
+    ]
+}
+CTAG

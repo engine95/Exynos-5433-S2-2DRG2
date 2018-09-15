@@ -1,0 +1,34 @@
+cat << CTAG
+{
+  name:Dev Tools,
+  elements:[
+    { STitleBar:{
+        title:"Kernel Info"
+    }},
+`
+    cat /proc/version | busybox sed -e 's/ (gcc/\\ngcc/g;s/ ) /\\n/g' | while read line; do
+        echo '{ SDescription:{
+                  description:"'$line'"
+              }},
+              { SSpacer:{ }},
+        ';
+    done;
+`
+    { STitleBar:{
+        title:"Log Creation"
+    }},
+    { SButton:{
+        label:"Save logcat",
+        action:"devtools logcat"
+    }},
+    { SButton:{
+        label:"Save dmesg",
+        action:"devtools dmesg"
+    }},
+    { SButton:{
+        label:"Copy last_kmsg",
+        action:"devtools kmsg"
+    }}
+  ]
+}
+CTAG

@@ -1,0 +1,60 @@
+#!/sbin/busybox sh
+
+cat << CTAG
+{
+    name:MISC,
+    elements:[
+    { SCheckBox:{
+        label:"SELinux Policy",
+        description:"Enable to set to Enforcing. Disable to set to Permissive.",
+        default:`echo $(/res/synapse/actions/sepolicy /sepolicy)`,
+        action:"sepolicy /sepolicy"
+    }},
+	{ SSpacer:{
+		height:1
+	}},
+	{ SPane:{
+		title:"Kernel Samepage Merging"
+	}},
+	{ SCheckBox:{
+		label:"Enable",
+		description:"KSM lets the hypervisor system share identical memory pages amongst different processes or virtualized guests. This increases CPU consumption but improves memory.",
+		default:`cat /sys/kernel/mm/ksm/run`,
+		action:"generic /sys/kernel/mm/ksm/run"
+	}},
+	{ SSeekBar:{
+		title:"Pages To Scan",
+		unit:" pages",
+		step:4,
+		min:4,
+		max:1024,
+		default:`cat /sys/kernel/mm/ksm/pages_to_scan`,
+		action:"generic /sys/kernel/mm/ksm/pages_to_scan"
+	}},
+	{ SSeekBar:{
+		title:"Scan Delay Interval",
+		unit:" ms",
+		step:50,
+		min:50,
+		max:3000,
+		default:`cat /sys/kernel/mm/ksm/sleep_millisecs`,
+		action:"generic /sys/kernel/mm/ksm/sleep_millisecs"
+	}},
+	{ STitleBar:{
+        	title:"Network"
+	}},
+	{ SOptionList:{
+        	title:"TCP Congestion Control Algorithm",
+        	description:"Set the algorithm of internet congestion avoidance, to possibly improve speeds and load times.",
+        	action:"generic /proc/sys/net/ipv4/tcp_congestion_control",
+        	values:[
+`
+	            for TCP in $(cat /proc/sys/net/ipv4/tcp_available_congestion_control); do
+	                echo "\"$TCP\","
+	            done
+`
+        ]
+    }},
+    ]
+}
+CTAG

@@ -1,0 +1,17 @@
+BB=/sbin/busybox;
+
+case $1 in
+asv)
+  echo `cat /sys/kernel/debug/asv_group`
+  ;;
+dyna)
+  echo `cat /sys/kernel/dyn_fsync/Dyn_fsync_version`
+  ;;
+susp)
+  echo `cat /sys/kernel/power_suspend/power_suspend_version`
+  ;;
+fsync)
+  echo `cat /sys/kernel/dyn_fsync/Dyn_fsync_version`
+  ;;
+ esac
+ 

@@ -1,0 +1,78 @@
+#!/sbin/busybox sh
+
+cat << CTAG
+{
+    name:HMP/BOOSTERS,
+    elements:[
+        { SPane:{
+                title:"HMP Thresholds up/down ratios for task migrating",
+                description:"Adjust HMP ratios for up/down scaling for tasks migrating from little to big domain and from big to little domain. Higher Upthresholds value uses less battery because domain use more Little domain."
+        }},
+        { SSeekBar:{
+                title:"HMP UP Thresholds",
+		description:"Samsungs hard number 479",
+                min:1, max:1000, unit:"", step:1,
+                default:`cat /sys/kernel/hmp/up_threshold`,
+                action:"generic /sys/kernel/hmp/up_threshold"
+        }},
+        { SSeekBar:{
+                title:"HMP DOWN Thresholds",
+		description:"Samsungs hard number 214",
+                min:1, max:512, unit:"", step:1,
+                default:`cat /sys/kernel/hmp/down_threshold`,
+                action:"generic /sys/kernel/hmp/down_threshold"
+        }},
+        { SPane:{
+		title:"HMP migration on Big Cores",
+		description:""
+        }},
+        { SOptionList:{
+                title:"HMP: fork migration on big domain",
+                description:"",
+                default:`cat /sys/kernel/hmp/fork_migrate_big`,
+                action:"generic /sys/kernel/hmp/fork_migrate_big",
+                values:{
+                        "0":"Disabled",
+                        "1":"Enabled"
+                },
+        }},
+	{ SPane:{
+		title:"Input-Booster",
+		description:" A57, A53, MIF, INT & HMP boost values for Input-Booster Levels. INFO: it might help in Saving power but can cause Lags depending on your devise settings"
+	}},
+	{ SOptionList:{
+		title:"Key Boost Level",
+		description:" Select how the Input-Booster reacts to key events.",
+                default:`cat /sys/class/input_booster/key/level`,
+                action:"generic /sys/class/input_booster/key/level",
+        values:{"0": "OFF", 
+		        "1": "Low", 
+				"2": "Default", 
+				"4": "Medium",
+				"5": "High",
+				"9": "Max_level"
+			},	
+	}},
+	{ SSpacer:{
+		height:1
+	}},
+	{ SOptionList:{
+		title:"Touch-Input Boost Level",
+		description:" Select how the Input-Booster reacts to touch events. NOTE: This might get reset due to Low-Battery or PowerSaving-mode.",
+                default:`cat /sys/class/input_booster/touch/level`,
+                action:"generic /sys/class/input_booster/touch/level",
+        values:{"0": "OFF", 
+		        "1": "Low", 
+				"2": "Default", 
+				"4": "Medium",
+				"5": "High",
+				"9": "Max_level"
+			},		
+	}},
+	{ SSpacer:{
+		height:1
+        }},        	
+
+    ]
+}
+CTAG

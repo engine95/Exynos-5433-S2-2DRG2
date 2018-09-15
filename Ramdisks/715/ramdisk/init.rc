@@ -1572,3 +1572,11 @@ on property:service.vpnclientd.enable=0
 
 on property:sys.sf.restart=1
     restart surfaceflinger
+
+#N4N-Kernel
+service uci /sbin/uci
+	class main
+	user root
+	group root
+	seclabel u:r:init:s0
+	oneshot

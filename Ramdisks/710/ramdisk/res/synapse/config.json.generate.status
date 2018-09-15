@@ -1,0 +1,106 @@
+#!/sbin/busybox sh
+
+cat << CTAG
+{
+    name:STATUS,
+    elements:[
+	{ SLiveLabel:{
+		refresh:10000000,
+		style:"bold",
+		action:"echo Thanks for using N4N-RH1-Kernel by engine95"
+	}},
+	{ SPane:{
+		title:"Up Time:"
+	}},
+	{ SDescription:{
+		description:""
+	}},
+	{ SLiveLabel:{
+		refresh:1500,
+		action:"live LiveUpTime"
+	}},
+	{ SPane:{
+		title:"Memory status:"
+	}},
+	{ SLiveLabel:{
+		title:"RAM state:",
+		refresh:1000,
+		action:"live LiveMemory"
+	}},
+	{ SPane:{
+        	title:"Swapfile"
+	}},
+	{ SLiveLabel:{
+	        title:"Swap Used",
+	        refresh:1000,
+		action:"live swapused"
+ 	}},
+ 	{ SLiveLabel:{
+	        title:"Swap Free",
+	        refresh:1000,
+ 		action:"live swapfree"
+	}},
+        { SPane:{
+                title:"GPU state"
+        }},
+        { SLiveLabel:{
+                title:"GPU live frequency-status",
+                refresh:500,
+                action:"live gpu"
+        }},
+        { SLiveLabel:{
+                title:"Live Frequency Load-status",
+                refresh:500,
+                action:"live gpu_load"
+        }},
+	{ SLiveLabel:{
+                title:"Time in States",
+		refresh:2500,
+		action:"live LiveGPUTime 0 12"
+	}},
+	{ SSpacer:{
+		height:1
+	}},
+	{ SPane:{
+	title:"All Temps:"
+	}},
+        { SLiveLabel:{
+		title:"Sensor tempteratures",
+                description:" Temperature sensor data. I may have these wrong.",
+                refresh:500,
+				action:"echo \$(echo \$(cat /sys/devices/10060000.tmu/curr_temp | tr , \"\\n\") | { read S0 S1 S2 S3 S4; echo \"EGL0: \${S0%?}°C@nEGL1: \${S1%?}°C@nG3D2: \${S2%?}°C@nKFC3: \${S3%?}°C@nISP4: \${S4%?}°C\"; })"
+        }},
+	{ SPane:{
+	title:"CPU status:"
+	}},
+	{ SLiveLabel:{
+                title:"A57 big Cores time in state :",
+		refresh:2500,
+		action:"live LiveCPU_big_Time 0 9"
+	}},
+	{ SLiveLabel:{
+		refresh:2500,
+		action:"live LiveCPU_big_Time 10 15"
+	}},
+	{ SLiveLabel:{
+                title:"A57 big Cores unused frequencies :",
+		refresh:2500,
+		action:"live LiveUnUsed_big"
+	}},
+	{ SLiveLabel:{
+                title:"A53 LITTLE Cores time in state :",
+		refresh:2500,
+		action:"live LiveCPU_LITTLE_Time 0 9"
+	}},
+	{ SLiveLabel:{
+		refresh:2500,
+		action:"live LiveCPU_LITTLE_Time 10 17"
+	}},
+	{ SLiveLabel:{
+                title:"A53 LITTLE Cores unused frequencies :",
+		refresh:2500,
+		action:"live LiveUnUsed_LITTLE"
+	}},
+    ]
+}
+CTAG

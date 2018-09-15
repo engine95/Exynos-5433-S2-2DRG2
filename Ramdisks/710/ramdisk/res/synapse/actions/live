@@ -1,0 +1,239 @@
+readlines() { awk -v startl=${2:-1} -v nlines=${1:-10} ' NR - (startl-1) > nlines { exit( 0 ); } NR >= startl '; }
+
+BB=/sbin/busybox;
+
+case $1 in
+  generic)
+    echo "$(cat $2)$3";
+  ;;
+
+  percent)
+    if [ `cat $3` -gt 0 ]; then
+      echo "$(awk -v a=`cat $2` -v b=`cat $3` 'BEGIN { printf "%.1f", a / b * 100 }')%";
+    else
+      echo "N/A";
+    fi;
+  ;;
+
+gpu)
+  echo Clock: $(($(cat /sys/devices/14ac0000.mali/clock))) MHz
+  ;;
+gpu_load)
+  echo Load: $(($(cat /sys/class/misc/mali0/device/utilization))) %
+  ;;
+ LiveGPUTime)
+  STATE="";
+  CNT=0;
+  SUM=`$BB awk '{s+=$2} END {print s}' /sys/devices/14ac0000.mali/time_in_state`;
+		
+  while read FREQ TIME; do
+	if [ "$CNT" -ge $2 ] && [ "$CNT" -le $3 ]; then
+		FREQ="$((FREQ / 1)) MHz:";
+		if [ $TIME -ge "100" ]; then
+			PERC=`$BB awk "BEGIN { print ( ($TIME / $SUM) * 100) }"`;
+			PERC="`$BB printf "%0.1f\n" $PERC`%";
+			TIME=$((TIME / 100));
+			STATE="$STATE $FREQ `$BB echo - | $BB awk -v "S=$TIME" '{printf "%dh:%dm:%ds",S/(60*60),S%(60*60)/60,S%60}'` ($PERC)@n";
+		fi;
+	fi;
+	CNT=$((CNT+1));
+  done < /sys/devices/14ac0000.mali/time_in_state;
+		
+  STATE=${STATE%??};
+  $BB echo "$STATE";
+  ;;
+  entropy)
+  echo "`cat /proc/sys/kernel/random/entropy_avail`";
+  ;;
+  batttype)
+  echo Charge Type: `cat /sys/devices/battery.26/power_supply/battery/charge_type`
+  ;;
+battcurrav)
+  echo Current Average: $(($(cat /sys/devices/battery.26/power_supply/battery/current_avg) )) mA
+  ;;
+battcurrnow)
+  echo Current Now: $(($(cat /sys/devices/battery.26/power_supply/battery/current_now) )) mA
+  ;;
+battvoltnow)
+  echo Voltage Now: $(($(cat /sys/devices/battery.26/power_supply/battery/voltage_now) /1000)) mV
+  ;;
+batttemp)
+  echo Temp: $(($(cat /sys/devices/battery.26/power_supply/battery/batt_temp) / 10)) °C
+  ;;
+battcapa)
+  echo Capacity: $(($(cat /sys/devices/battery.26/power_supply/battery/capacity) )) %
+  ;;
+battstatus)
+  echo Status: `cat /sys/devices/battery.26/power_supply/battery/status`
+  ;;
+batthealth)
+  echo Health: `cat /sys/devices/battery.26/power_supply/battery/health`
+  ;;
+proclist)
+  echo "$(cat /proc/$2 | readlines r $3 $4 | awk 1 ORS='@n')";
+  ;;
+swapused)
+    echo "$(free -b | grep Swap | awk '{ print $3 }')";
+  ;;
+swapfree)
+    echo "$(free -b | grep Swap | awk '{ print $4 }')";
+  ;;
+  LiveUpTime)
+  TOTAL=`$BB awk '{ print $1 }' /proc/uptime`;
+  AWAKE=$((`$BB awk '{s+=$2} END {print s}' /sys/devices/system/cpu/cpu0/cpufreq/stats/time_in_state` / 100));
+  SLEEP=`$BB awk "BEGIN { print ($TOTAL - $AWAKE) }"`;
+		
+  PERC_A=`$BB awk "BEGIN { print ( ($AWAKE / $TOTAL) * 100) }"`;
+  PERC_A="`$BB printf "%0.1f\n" $PERC_A`%";
+  PERC_S=`$BB awk "BEGIN { print ( ($SLEEP / $TOTAL) * 100) }"`;
+  PERC_S="`$BB printf "%0.1f\n" $PERC_S`%";
+		
+  TOTAL=`$BB echo - | $BB awk -v "S=$TOTAL" '{printf "%dh:%dm:%ds",S/(60*60),S%(60*60)/60,S%60}'`;
+  AWAKE=`$BB echo - | $BB awk -v "S=$AWAKE" '{printf "%dh:%dm:%ds",S/(60*60),S%(60*60)/60,S%60}'`;
+  SLEEP=`$BB echo - | $BB awk -v "S=$SLEEP" '{printf "%dh:%dm:%ds",S/(60*60),S%(60*60)/60,S%60}'`;
+  $BB echo "Total: $TOTAL (100.0%)@nSleep: $SLEEP ($PERC_S)@nAwake: $AWAKE ($PERC_A)";
+;;
+LiveUnUsed_LITTLE)
+  UNUSED="";
+  while read FREQ TIME; do
+	FREQ="$((FREQ / 1000)) ";
+	if [ $TIME -lt "100" ]; then
+		UNUSED="$UNUSED$FREQ, ";
+	fi;
+  done < /sys/devices/system/cpu/cpu0/cpufreq/stats/time_in_state;
+		
+  UNUSED=${UNUSED%??};
+  $BB echo "$UNUSED";
+;;
+LiveUnUsed_big)
+  UNUSED="";
+  while read FREQ TIME; do
+	FREQ="$((FREQ / 1000)) ";
+	if [ $TIME -lt "100" ]; then
+		UNUSED="$UNUSED$FREQ, ";
+	fi;
+  done < /sys/devices/system/cpu/cpu4/cpufreq/stats/time_in_state;
+		
+  UNUSED=${UNUSED%??};
+  $BB echo "$UNUSED";
+;;
+LiveCPU_big_Time)
+  STATE="";
+  CNT=0;
+  SUM=`$BB awk '{s+=$2} END {print s}' /sys/devices/system/cpu/cpu4/cpufreq/stats/time_in_state`;
+		
+  while read FREQ TIME; do
+	if [ "$CNT" -ge $2 ] && [ "$CNT" -le $3 ]; then
+		FREQ="$((FREQ / 1000)) MHz:";
+		if [ $TIME -ge "100" ]; then
+			PERC=`$BB awk "BEGIN { print ( ($TIME / $SUM) * 100) }"`;
+			PERC="`$BB printf "%0.1f\n" $PERC`%";
+			TIME=$((TIME / 100));
+			STATE="$STATE $FREQ `$BB echo - | $BB awk -v "S=$TIME" '{printf "%dh:%dm:%ds",S/(60*60),S%(60*60)/60,S%60}'` ($PERC)@n";
+		fi;
+	fi;
+	CNT=$((CNT+1));
+  done < /sys/devices/system/cpu/cpu4/cpufreq/stats/time_in_state;
+		
+  STATE=${STATE%??};
+  $BB echo "$STATE";
+  ;;
+LiveCPU_LITTLE_Time)
+  STATE="";
+  CNT=0;
+  SUM=`$BB awk '{s+=$2} END {print s}' /sys/devices/system/cpu/cpu0/cpufreq/stats/time_in_state`;
+		
+  while read FREQ TIME; do
+	if [ "$CNT" -ge $2 ] && [ "$CNT" -le $3 ]; then
+		FREQ="$((FREQ / 1000)) MHz:";
+		if [ $TIME -ge "100" ]; then
+			PERC=`$BB awk "BEGIN { print ( ($TIME / $SUM) * 100) }"`;
+			PERC="`$BB printf "%0.1f\n" $PERC`%";
+			TIME=$((TIME / 100));
+			STATE="$STATE $FREQ `$BB echo - | $BB awk -v "S=$TIME" '{printf "%dh:%dm:%ds",S/(60*60),S%(60*60)/60,S%60}'` ($PERC)@n";
+		fi;
+	fi;
+	CNT=$((CNT+1));
+  done < /sys/devices/system/cpu/cpu0/cpufreq/stats/time_in_state;
+		
+  STATE=${STATE%??};
+  $BB echo "$STATE";
+  ;;
+  LivebigFrequency)
+  CPU4=`$BB cat /sys/devices/system/cpu/cpu4/cpufreq/scaling_cur_freq 2> /dev/null`;
+
+  if [ -z "$CPU4" ]; then CPU4="Offline"; else CPU4="$((CPU4 / 1000)) MHz"; fi;
+		
+$BB echo "$CPU4";
+;;
+LiveLITTLEFrequency)
+  CPU0=`$BB cat /sys/devices/system/cpu/cpu0/cpufreq/scaling_cur_freq 2> /dev/null`;
+
+  if [ -z "$CPU0" ]; then CPU0="Offline"; else CPU0="$((CPU0 / 1000)) MHz"; fi;
+		
+$BB echo "$CPU0";
+;;
+LiveMemory)
+  while read TYPE MEM KB; do
+	if [ "$TYPE" = "MemTotal:" ]; then
+		TOTAL="$((MEM / 1024)) MB";
+	elif [ "$TYPE" = "MemFree:" ]; then
+		CACHED=$((MEM / 1024));
+	elif [ "$TYPE" = "Cached:" ]; then
+		FREE=$((MEM / 1024));
+	fi;
+  done < /proc/meminfo;
+		
+  FREE="$((FREE + CACHED)) MB";
+  $BB echo "Total: $TOTAL@nFree: $FREE";
+    ;;
+IOReadAheadSize)
+		$BB echo "`$BB cat /sys/block/mmcblk0/queue/read_ahead_kb`";
+	;;
+IOScheduler)
+		$BB echo "`$BB cat /sys/block/mmcblk0/queue/scheduler`";
+	;;
+battemp)
+		BAT_C=`$BB awk '{ print $1 / 10 }' /sys/class/power_supply/battery/temp`;
+		BAT_H=`cat /sys/class/power_supply/battery/health`;
+
+		$BB echo "$BAT_C°C@nHealth: $BAT_H";
+    ;;
+cpufreq)
+		CPU0=`cat /sys/devices/system/cpu/cpu0/cpufreq/scaling_cur_freq 2> /dev/null`
+		CPU1=`cat /sys/devices/system/cpu/cpu1/cpufreq/scaling_cur_freq 2> /dev/null`
+		CPU2=`cat /sys/devices/system/cpu/cpu2/cpufreq/scaling_cur_freq 2> /dev/null`
+		CPU3=`cat /sys/devices/system/cpu/cpu3/cpufreq/scaling_cur_freq 2> /dev/null`
+		CPU4=`cat /sys/devices/system/cpu/cpu4/cpufreq/scaling_cur_freq 2> /dev/null`
+		CPU5=`cat /sys/devices/system/cpu/cpu5/cpufreq/scaling_cur_freq 2> /dev/null`
+		CPU6=`cat /sys/devices/system/cpu/cpu6/cpufreq/scaling_cur_freq 2> /dev/null`
+		CPU7=`cat /sys/devices/system/cpu/cpu7/cpufreq/scaling_cur_freq 2> /dev/null`
+		
+		$BB test -z $CPU0 && CPU0="Offline";
+		$BB test -z $CPU1 && CPU1="Offline";
+		$BB test -z $CPU2 && CPU2="Offline";
+		$BB test -z $CPU3 && CPU3="Offline";
+		$BB test -z $CPU4 && CPU4="Offline";
+		$BB test -z $CPU5 && CPU5="Offline";
+		$BB test -z $CPU6 && CPU6="Offline";
+		$BB test -z $CPU7 && CPU7="Offline";
+		
+		$BB test $CPU0 != "Offline" && CPU0="$((CPU0 / 1000)) MHz";
+		$BB test $CPU1 != "Offline" && CPU1="$((CPU1 / 1000)) MHz";
+		$BB test $CPU2 != "Offline" && CPU2="$((CPU2 / 1000)) MHz";
+		$BB test $CPU3 != "Offline" && CPU3="$((CPU3 / 1000)) MHz";
+		$BB test $CPU4 != "Offline" && CPU4="$((CPU4 / 1000)) MHz";
+		$BB test $CPU5 != "Offline" && CPU5="$((CPU5 / 1000)) MHz";
+		$BB test $CPU6 != "Offline" && CPU6="$((CPU6 / 1000)) MHz";
+		$BB test $CPU7 != "Offline" && CPU7="$((CPU7 / 1000)) MHz";
+		
+		echo "Core 0: $CPU0@nCore 1: $CPU1@nCore 2: $CPU2@nCore 3: $CPU3@nCore 4: $CPU4@nCore 5: $CPU5@nCore 6: $CPU6@nCore 7: $CPU7";
+	;;
+LiveCPUTemperature)
+		CPU_C=`$BB cat /sys/class/thermal/thermal_zone5/temp`;
+		CPU_F=`$BB awk "BEGIN { print ( ($CPU_C * 1.8) + 32 ) }"`;
+
+		$BB echo "$CPU_C°C | $CPU_F°F";
+	;;
+esac
+

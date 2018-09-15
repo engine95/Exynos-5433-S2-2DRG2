@@ -1,0 +1,60 @@
+#!/sbin/sh
+
+cat << CTAG
+{
+    name:"A57(big)Cluster",
+    elements:[
+	{ SLiveLabel:{
+                  title:"CPU frequency",
+                  description:"Current frequency.",
+                  refresh:500,
+                  action:"FREQ=\$(cat /sys/devices/system/cpu/cpu4/cpufreq/cpuinfo_cur_freq); L=\"\${FREQ%???}MHz\"; echo \$L;"
+        }},
+	{ SPane:{
+		title:"CPUFreq scaling"
+	}},        
+	{ SDescription:{
+		description:" Note: Settings may automatically change due to Samsung DVFS."
+	}},
+	{ SSeekBar:{
+       		title:"CPU max frequency",
+		description:"Set the maximum freqency the CPU scales up to.",
+		default:`cat /sys/devices/system/cpu/cpu4/cpufreq/scaling_max_freq`,
+		action:"generic /sys/devices/system/cpu/cpu4/cpufreq/scaling_max_freq",
+		values:{
+`
+			for FREQ in $(cat /sys/devices/system/cpu/cpufreq/mp-cpufreq/cpu_freq_table); do
+				LABEL=$(expr $FREQ / 1000)
+				echo "$FREQ:\"${LABEL}MHz\", "
+			done
+`
+		}
+	}},
+	{ SSeekBar:{
+       		title:"CPU min frequency",
+		description:"Set the minimum freqency the CPU scales down to.",
+		default:`cat /sys/devices/system/cpu/cpu4/cpufreq/scaling_min_freq`,
+		action:"generic /sys/devices/system/cpu/cpu4/cpufreq/scaling_min_freq",
+		values:{
+`
+			for FREQ in $(cat /sys/devices/system/cpu/cpufreq/mp-cpufreq/cpu_freq_table); do
+				LABEL=$(expr $FREQ / 1000)
+				echo "$FREQ:\"${LABEL}MHz\", "
+			done
+`
+		}
+	}},
+	{ SPane:{
+		title:"CPU voltage control",
+		description:"Decreasing voltage will lower power consumption of the CPU. Increasing it on overclocked frequencies improves stability. Too low voltage may cause instabilities and freezes."
+        }},
+
+`
+while read FREQ VOLT; do
+	echo '{ SSeekBar:{ default:'$VOLT', title:"'$(expr $FREQ / 1000)' MHz"'
+	echo ', action:"cpuvolt '${FREQ}'", unit:"mV", weight:0.001, min:700000, step:6250, max:1375000 }},'
+done < /sys/devices/system/cpu/cpufreq/mp-cpufreq/cpu_volt_table
+`
+    ]
+}
+CTAG

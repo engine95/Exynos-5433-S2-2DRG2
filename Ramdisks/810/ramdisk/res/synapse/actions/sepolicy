@@ -1,0 +1,14 @@
+if [ -f $1 ]; then
+
+  case $1 in
+    /sepolicy)
+      if [[ ! -z $2 ]]; then
+        setenforce $2;
+      fi;
+      [ `getenforce` == "Enforcing" ] && echo 1;
+      [ `getenforce` == "Permissive" ] && echo 0;
+    ;;
+  esac;
+
+fi;
+
