@@ -984,6 +984,13 @@ static int sec_chg_set_property(struct power_supply *psy,
 				sm5703_set_input_current_limit(charger, charger->current_max);
 			} else if (charger->cable_type == POWER_SUPPLY_TYPE_OTG) {
 				pr_info("%s: OTG mode\n", __func__);
+				//2017.01.06 : If Lanhub cable is changed to OTG cable, needed to disable charger operation.
+				pr_info("%s: previous_cable_type = %d, cable_type = %d\n", __func__,previous_cable_type, charger->cable_type);
+				if (previous_cable_type == POWER_SUPPLY_TYPE_LAN_HUB)
+				{				
+					pr_info("%s: LAN HUB condition is turned off by charger driver\n", __func__);
+					sm5703_enable_charger_switch(charger, 0);
+				}
 				sm5703_charger_otg_control(charger, true);
 			} else {
 				pr_info("%s:[BATT] Set charging"
@@ -1010,6 +1017,15 @@ static int sec_chg_set_property(struct power_supply *psy,
 						charger->is_mdock = true;
 					}
 				}
+
+				//2017.01.06 : If OTG cable is changed to Lanhub cable, needed to disable OTG operation.				
+				pr_info("%s: previous_cable_type = %d\n", __func__,previous_cable_type);
+				if (previous_cable_type == POWER_SUPPLY_TYPE_OTG && charger->cable_type == POWER_SUPPLY_TYPE_LAN_HUB)
+				{
+					pr_info("%s:OTG condition is turned off by charger driver\n", __func__);				
+					sm5703_charger_otg_control(charger, false);
+				}
+
 				/* Enable charger */
 				sm5703_configure_charger(charger);
 			}

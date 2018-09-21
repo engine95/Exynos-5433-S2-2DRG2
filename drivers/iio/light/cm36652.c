@@ -334,6 +334,7 @@ static void cm36652_led_onoff(struct cm36652_data *cm36652_iio, bool onoff)
 		int ret = regulator_enable(cm36652_iio->vled_2p8);
 		if (ret < 0) {
 			pr_err("%s : regulator 2.8 is not enable", __func__);
+			regulator_put(cm36652_iio->vled_2p8);
 			return;
 		}
 		usleep_range(10000, 20000);
@@ -565,8 +566,8 @@ static void cm36652_prox_enable(struct cm36652_data *cm36652_iio)
 	u16 ps_data = 0;
 
 	pr_info("%s\n", __func__);
-	cm36652_iio->power_state |= PROXIMITY_ENABLED;
 	cm36652_led_onoff(cm36652_iio,1);
+	cm36652_iio->power_state |= PROXIMITY_ENABLED;
 #ifdef CM36652_CANCELATION
 	/* open cancelation data */
 	err = proximity_open_cancelation(cm36652_iio);
