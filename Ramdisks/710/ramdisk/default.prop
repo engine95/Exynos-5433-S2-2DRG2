@@ -34,6 +34,6 @@ wlan.wfd.hdcp=disable
 #
 # BOOTIMAGE_BUILD_PROPERTIES
 #
-ro.bootimage.build.date=Thu Jul 12 16:31:35 KST 2018
-ro.bootimage.build.date.utc=1531380695
-ro.bootimage.build.fingerprint=samsung/gts28wifixx/gts28wifi:7.0/NRD90M/T710XXU2DRG2:user/test-keys
+ro.bootimage.build.date=Mon Aug 6 15:13:05 KST 2018
+ro.bootimage.build.date.utc=1533535985
+ro.bootimage.build.fingerprint=samsung/gts28wifixx/gts28wifi:7.0/NRD90M/T710XXU2DRH1:user/test-keys

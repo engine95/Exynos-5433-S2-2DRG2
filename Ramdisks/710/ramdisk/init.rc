@@ -1312,7 +1312,7 @@ service console /system/bin/sh
     user shell
     group shell log readproc
     seclabel u:r:shell:s0
-
+    
 service SIDESYNC_service /system/bin/ss_conn_daemon
     class main
     socket ss_conn_daemon stream 0666 system system
