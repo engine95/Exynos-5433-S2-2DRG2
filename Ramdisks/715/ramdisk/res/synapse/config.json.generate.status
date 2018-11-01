@@ -27,19 +27,6 @@ cat << CTAG
 		refresh:1000,
 		action:"live LiveMemory"
 	}},
-	{ SPane:{
-        	title:"Swapfile"
-	}},
-	{ SLiveLabel:{
-	        title:"Swap Used",
-	        refresh:1000,
-		action:"live swapused"
- 	}},
- 	{ SLiveLabel:{
-	        title:"Swap Free",
-	        refresh:1000,
- 		action:"live swapfree"
-	}},
         { SPane:{
                 title:"GPU state"
         }},
