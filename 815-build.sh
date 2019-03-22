@@ -7,7 +7,7 @@ RDIR=$(pwd)
 
 export ARCH=arm
 
-export CROSS_COMPILE=../toolchains/arm-eabi-4.8/bin/arm-eabi-
+export CROSS_COMPILE=../toolchains/UBERTC-4.8/bin/arm-eabi-
 
 make clean
 
