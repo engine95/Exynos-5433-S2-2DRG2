@@ -34,6 +34,6 @@ wlan.wfd.hdcp=disable
 #
 # BOOTIMAGE_BUILD_PROPERTIES
 #
-ro.bootimage.build.date=Thu Aug 2 11:35:14 KST 2018
-ro.bootimage.build.date.utc=1533177314
-ro.bootimage.build.fingerprint=samsung/gts210ltexx/gts210lte:7.0/NRD90M/T815XXU2CRH1:user/test-keys
+ro.bootimage.build.date=Fri Sep 27 09:45:09 KST 2019
+ro.bootimage.build.date.utc=1569545109
+ro.bootimage.build.fingerprint=samsung/gts210ltedx/gts210lte:7.0/NRD90M/T815YDVU2CSI2:user/test-keys

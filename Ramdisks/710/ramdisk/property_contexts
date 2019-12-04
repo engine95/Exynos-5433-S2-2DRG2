@@ -427,6 +427,9 @@ zygote.aslr.agent32                 u:object_r:aslr_prop:s0
 # App Permission Monitor
 persist.app.permission.monitor      u:object_r:apm_prop:s0
 
+# avc:  denied  { set } for property=ro.sts.property pid=608 uid=0 gid=0 scontext=u:r:scs:s0 tcontext=u:object_r:default_prop:s0 tclass=property_service permissive=0
+ro.sts.property    u:object_r:sts_prop:s0
+
 ############ knox_common #############
 audit.ondenial u:object_r:denial_prop:s0
 persist.security.ams.       u:object_r:container_mgmt_prop:s0
