@@ -7,7 +7,7 @@ cat << CTAG
 	{ SLiveLabel:{
 		refresh:10000000,
 		style:"bold",
-		action:"echo Thanks for using N4N-RH1-Kernel by engine95"
+		action:"echo Thanks for using N4N-SI2-Kernel by engine95"
 	}},
 	{ SPane:{
 		title:"Up Time:"
