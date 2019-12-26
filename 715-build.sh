@@ -45,25 +45,25 @@ rm -rf sizT
 
 echo "Cleanup AIK"
 
-cd /home/matt/android/N4N/Ramdisks/AIK-Linux
+cd /home/engine95/android/N4N/Ramdisks/AIK-Linux
 
 sudo ./cleanup.sh
 
 echo "Copy zImage"
 
-sudo cp -a /home/matt/android/N4N/arch/arm/boot/zImage /home/matt/android/N4N/Ramdisks/715/split_img/boot.img-zImage
+sudo cp -a /home/engine95/android/N4N/arch/arm/boot/zImage /home/engine95/android/N4N/Ramdisks/715/split_img/boot.img-zImage
 
 echo "Copy dt.img"
 
-sudo cp -a /home/matt/android/N4N/dt.img /home/matt/android/N4N/Ramdisks/715/split_img/boot.img-dtb
+sudo cp -a /home/engine95/android/N4N/dt.img /home/engine95/android/N4N/Ramdisks/715/split_img/boot.img-dtb
 
 echo "Copy Ramdisk"
 
-sudo cp -a /home/matt/android/N4N/Ramdisks/715/ramdisk/. /home/matt/android/N4N/Ramdisks/AIK-Linux/ramdisk
+sudo cp -a /home/engine95/android/N4N/Ramdisks/715/ramdisk/. /home/engine95/android/N4N/Ramdisks/AIK-Linux/ramdisk
 
 echo "Copy split_img"
 
-sudo cp -a /home/matt/android/N4N/Ramdisks/715/split_img/. /home/matt/android/N4N/Ramdisks/AIK-Linux/split_img
+sudo cp -a /home/engine95/android/N4N/Ramdisks/715/split_img/. /home/engine95/android/N4N/Ramdisks/AIK-Linux/split_img
 
 echo "pack boot.img"
 
@@ -71,16 +71,16 @@ sudo ./repackimg.sh
 
 echo "Copy boot.img"
 
-cp /home/matt/android/N4N/Ramdisks/AIK-Linux/image-new.img /home/matt/android/N4N/Ramdisks/715boot.img
+cp /home/engine95/android/N4N/Ramdisks/AIK-Linux/image-new.img /home/engine95/android/N4N/Ramdisks/715boot.img
 
-echo -n "SEANDROIDENFORCE" >> /home/matt/android/N4N/Ramdisks/715boot.img
+echo -n "SEANDROIDENFORCE" >> /home/engine95/android/N4N/Ramdisks/715boot.img
 
 echo "Cleanup AIK"
 
 sudo ./cleanup.sh
 
-rm /home/matt/android/N4N/Ramdisks/715/split_img/boot.img-zImage
+rm /home/engine95/android/N4N/Ramdisks/715/split_img/boot.img-zImage
 
-echo "boot.img at /home/matt/android/N4N/Ramdisks/715boot.img"
+echo "boot.img at /home/engine95/android/N4N/Ramdisks/715boot.img"
 
 echo "Finished"
