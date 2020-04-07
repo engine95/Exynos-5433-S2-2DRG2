@@ -1,0 +1,29 @@
+timestamp=`date +%Y-%m-%d.%H.%M.%S`;
+
+case $1 in
+  logcat)
+    saved="/sdcard/logcat-$timestamp.txt";
+    logcat -d > $saved;
+  ;;
+
+  dmesg)
+    saved="/sdcard/dmesg-$timestamp.txt";
+    dmesg > $saved;
+  ;;
+
+  kmsg)
+    kmsg=/proc/last_kmsg;
+    if [ -f $kmsg ]; then
+      saved="/sdcard/last_kmsg-$timestamp.txt";
+      cp -f $kmsg $saved;
+    else
+      echo "$kmsg not found.";
+    fi;
+  ;;
+esac;
+
+case $1 in
+  logcat|dmesg|kmsg)
+    echo "Saving logfile to $saved";
+  ;;
+esac;

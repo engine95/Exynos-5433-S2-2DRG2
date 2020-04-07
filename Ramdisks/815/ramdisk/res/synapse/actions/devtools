@@ -1,29 +1,138 @@
-timestamp=`date +%Y-%m-%d.%H.%M.%S`;
+BB=/sbin/busybox;
+
+# SQLite log location
+LOGS=/sdcard/N4N/Logs/SQLite.txt;
+
+if [ "$($BB mount | grep rootfs | cut -c 26-27 | grep -c ro)" -eq "1" ]; then
+	$BB mount -o remount,rw /;
+fi;
+if [ "$($BB mount | grep system | grep -c ro)" -eq "1" ]; then
+	$BB mount -o remount,rw /system;
+fi;
 
 case $1 in
-  logcat)
-    saved="/sdcard/logcat-$timestamp.txt";
-    logcat -d > $saved;
+  reboot)
+	echo "0" > /sys/kernel/dyn_fsync/Dyn_fsync_active;
+	$BB sync;
+	$BB sleep 1;
+	reboot $2;
   ;;
-
-  dmesg)
-    saved="/sdcard/dmesg-$timestamp.txt";
-    dmesg > $saved;
+  cleardata)
+	echo "0" > /sys/kernel/dyn_fsync/Dyn_fsync_active;
+	am force-stop com.af.synapse 2> /dev/null;
+	$BB sleep 1;
+	$BB rm -R /data/data/com.af.synapse/databases;
+	$BB rm -R /data/data/com.af.synapse/cache;
+	$BB sync;
+	$BB sleep 1;
+	/system/bin/reboot;
   ;;
+  restart)
+    	am force-stop com.af.synapse 2> /dev/null;
+    	reset_uci;
+	$BB sync;
+    	$BB sleep 1;
+    	am start -a android.intent.action.MAIN -n com.af.synapse/.MainActivity 2> /dev/null;
+  ;;
+  optimizedb)
+	if [ -e $LOGS ]; then
+		rm $LOGS;
+	fi;
 
-  kmsg)
-    kmsg=/proc/last_kmsg;
-    if [ -f $kmsg ]; then
-      saved="/sdcard/last_kmsg-$timestamp.txt";
-      cp -f $kmsg $saved;
-    else
-      echo "$kmsg not found.";
-    fi;
+	# Create Log folder on sdcard
+	LOG=/sdcard/N4N/Logs;
+
+	[ ! -d "$LOG" ] && mkdir -p "$LOG";
+	chmod 755 $LOG
+
+	echo "SQLite database VACUUM and REINDEX started at $( date +"%m-%d-%Y %H:%M:%S" )" | tee -a $LOGS;
+
+	for i in `$BB find /data -iname "*.db"`; do 
+		sbin/sqlite3 $i 'VACUUM;' 2> /dev/null;
+			resVac=$?
+			if [ $resVac == 0 ]; then
+				resVac="SUCCESS";
+			else
+				resVac="ERRCODE-$resVac";
+			fi;
+		sbin/sqlite3 $i 'REINDEX;' 2> /dev/null;
+			resIndex=$?
+			if [ $resIndex == 0 ]; then
+				resIndex="SUCCESS";
+			else
+				resIndex="ERRCODE-$resIndex";
+			fi;
+		echo "Database $i:  VACUUM=$resVac  REINDEX=$resIndex" | tee -a $LOGS;
+	done;
+
+	for i in `$BB find /sdcard -iname "*.db"`; do
+		sbin/sqlite3 $i 'VACUUM;' 2> /dev/null;
+			resVac=$?
+			if [ $resVac == 0 ]; then
+				resVac="SUCCESS";
+			else
+				resVac="ERRCODE-$resVac";
+			fi;
+		sbin/sqlite3 $i 'REINDEX;' 2> /dev/null;
+			resIndex=$?
+			if [ $resIndex == 0 ]; then
+				resIndex="SUCCESS";
+			else
+				resIndex="ERRCODE-$resIndex";
+			fi;
+		echo "Database $i:  VACUUM=$resVac  REINDEX=$resIndex" | tee -a $LOGS;
+	done;
+		echo "SQLite database VACUUM and REINDEX finished at $( date +"%m-%d-%Y %H:%M:%S" )" | tee -a $LOGS;
+		
+	$BB echo "Databases have been optimized";
+  ;;
+  fstrim)
+	echo -e "Trim /data"
+	$BB fstrim -v /data
+	echo -e ""
+	echo -e "Trim /cache"
+	$BB fstrim -v /cache
+	echo -e ""
+	echo -e "Trim /system"
+	$BB fstrim -v /system
+	echo -e ""
+	$BB sync
+  ;;
+  wipe_cache_reboot)
+	echo "0" > /sys/kernel/dyn_fsync/Dyn_fsync_active;
+	$BB rm -rf /cache/*
+	$BB sync;
+	$BB sleep 1;
+	/system/bin/reboot;
+  ;;
+  wipe_dalvik_reboot)
+	echo "0" > /sys/kernel/dyn_fsync/Dyn_fsync_active;
+	$BB rm -rf /data/dalvik-cache/*
+	$BB sync;
+	$BB sleep 1;
+	/system/bin/reboot;
+  ;;
+  wipe_cache-dalvik_reboot)
+	echo "0" > /sys/kernel/dyn_fsync/Dyn_fsync_active;
+	$BB rm -rf /cache/*
+	$BB rm -rf /data/dalvik-cache/*
+	$BB sync;
+	$BB sleep 1;
+	/system/bin/reboot;
+  ;;
+  clean_up)
+	$BB rm -rf /cache/lost+found/*
+	$BB rm -rf /data/anr/*
+	$BB rm -rf /data/clipboard/*
+	$BB rm -rf /data/lost+found/*
+	$BB rm -rf /data/system/dropbox/*
+	$BB rm -rf /data/tombstones/*
+	$BB sync;
+	$BB sleep 1;
+	echo "Clean up done";
   ;;
 esac;
 
-case $1 in
-  logcat|dmesg|kmsg)
-    echo "Saving logfile to $saved";
-  ;;
-esac;
+$BB mount -t rootfs -o remount,ro rootfs;
+$BB mount -o remount,ro /system;
+

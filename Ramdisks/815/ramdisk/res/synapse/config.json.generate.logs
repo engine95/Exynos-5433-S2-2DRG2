@@ -1,6 +1,6 @@
 cat << CTAG
 {
-  name:Dev Tools,
+  name:LOGS,
   elements:[
     { STitleBar:{
         title:"Kernel Info"
@@ -19,15 +19,15 @@ cat << CTAG
     }},
     { SButton:{
         label:"Save logcat",
-        action:"devtools logcat"
+        action:"logs logcat"
     }},
     { SButton:{
         label:"Save dmesg",
-        action:"devtools dmesg"
+        action:"logs dmesg"
     }},
     { SButton:{
         label:"Copy last_kmsg",
-        action:"devtools kmsg"
+        action:"logs kmsg"
     }}
   ]
 }

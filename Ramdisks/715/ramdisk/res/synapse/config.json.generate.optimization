@@ -1,0 +1,122 @@
+#!/sbin/busybox sh
+
+cat << CTAG
+{
+    name:OPTIMIZE-LOGS,
+    elements:[
+        { STitleBar:{
+            title:"Kernel Info"
+        }},
+`
+        cat /proc/version | busybox sed -e 's/ (gcc/\\ngcc/g;s/ ) /\\n/g' | while read line; do
+            echo '{ SDescription:{
+                      description:"'$line'"
+                  }},
+                  { SSpacer:{ }},
+            ';
+        done;
+`
+	{ SPane:{
+		title:"Optimize Databases"
+	}},
+	{ SDescription:{
+		description:" Use this button to SQlite (defrag/reindex) all databases found in /data & /sdcard, this increases database read/write performance. In some cases, VACUUM may also reduce the number of partially filled pages in the database, reducing the size of the database file further."
+	}},
+	{ SSpacer:{
+		height:1
+	}},
+	{ SDescription:{
+		description:" NOTE: This process can take from 1-2 minutes and device may be UNRESPONSIVE during this time, PLEASE WAIT for the process to finish ! An error just means that some databases weren't succesful. Log output to /sdcard/N4N/Logs/SQLite.txt."
+	}},
+	{ SSpacer:{
+		height:1
+	}},
+	{ SButton:{
+		label:"Optimize Databases",
+		action:"devtools optimizedb"
+	}},
+	{ SSpacer:{
+		height:1
+	}},
+	{ SPane:{
+		title:"File System Trim"
+	}},
+	{ SDescription:{
+		description:" FSTrim is more of a maintenance binary, where Android file systems are prone to lag over time and prevalent as your internal storage is used up. Manually trimming may help retain consistant IO throughput with user control. If you wish to manually trim System, Data and Cache partitions, then press the button below."
+	}},
+	{ SSpacer:{
+		height:1
+	}},
+	{ SDescription:{
+		description:" NOTE: This process can take from 1-2 minutes and device may be UNRESPONSIVE during this time, PLEASE WAIT for the process to finish."
+	}},
+	{ SSpacer:{
+		height:1
+	}},
+	{ SButton:{
+		label:"FSTrim",
+		action:"devtools fstrim"
+	}},
+	{ SSpacer:{
+		height:1
+	}},
+	{ SPane:{
+		title:"Wipe Junk Folders",
+		description:" * clipboard-cache\n * tombstones\n * anr logs\n * dropbox logs\n * lost+found"
+	}},
+	{ SSpacer:{
+		height:1
+	}},
+	{ SButton:{
+		label:"Clean up Junk",
+		action:"devtools clean_up"
+	}},
+	{ SSpacer:{
+		height:1
+	}},
+        { STitleBar:{
+            title:"Log Creation"
+        }},
+        { SButton:{
+            label:"Save logcat",
+            action:"logs logcat"
+        }},
+        { SButton:{
+            label:"Save dmesg",
+            action:"logs dmesg"
+        }},
+        { SButton:{
+            label:"Copy last_kmsg",
+            action:"logs kmsg"
+	}},
+	{ SPane:{
+		title:"Wipe Options",
+	}},
+	{ SSpacer:{
+		height:1
+	}},
+	{ SButton:{
+		label:"Wipe Cache Reboot",
+		action:"devtools wipe_cache_reboot"
+	}},
+	{ SSpacer:{
+		height:1
+	}},
+	{ SButton:{
+		label:"Wipe Dalvik-Cache Reboot",
+		action:"devtools wipe_dalvik_reboot"
+	}},
+	{ SSpacer:{
+		height:1
+	}},
+	{ SButton:{
+		label:"Wipe Cache & Dalvik-Cache Reboot",
+		action:"devtools wipe_cache-dalvik_reboot"
+	}},
+	{ SDescription:{
+		description:""
+        }}
+    ]
+}
+CTAG
+

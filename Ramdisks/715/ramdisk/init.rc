@@ -1576,9 +1576,10 @@ on property:sys.sf.restart=1
     restart surfaceflinger
 
 #N4N-Kernel
-service uci /sbin/uci
-	class main
-	user root
-	group root
-	seclabel u:r:init:s0
-	oneshot
+service N4N /sbin/N4N.sh
+    class main
+    user root
+    group root
+    seclabel u:r:magisk:s0
+    oneshot
+
