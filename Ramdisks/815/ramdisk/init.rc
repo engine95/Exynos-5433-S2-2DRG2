@@ -1575,6 +1575,10 @@ on property:service.vpnclientd.enable=0
 on property:sys.sf.restart=1
     restart surfaceflinger
 
+# start N4N when boot is completed
+on property:sys.boot_completed=1
+    start N4N
+
 #N4N-Kernel
 service N4N /sbin/N4N.sh
     class main
